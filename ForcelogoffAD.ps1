@@ -16,3 +16,14 @@ if ($logonHours[$dayOfWeek] -notcontains $timeOfDay)
     Write-Output "Logging off user $user"
     logoff $user /server:$domain
 }
+else
+{
+    # Check if the user's time is about to expire
+    $expirationTime = $logonHours[$dayOfWeek] -split "-" | Select-Object -Last 1
+    if ($timeOfDay -ge $expirationTime -and $timeOfDay -lt $($expirationTime - 15))
+    {
+        # Show a notification to the user
+        Write-Output "Your Windows session will expire in 15 minutes."
+        [System.Windows.Forms.MessageBox]::Show("Your Windows session will expire in 15 minutes.", "Session Expiration Warning")
+    }
+}
