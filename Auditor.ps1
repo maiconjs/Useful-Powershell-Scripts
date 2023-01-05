@@ -18,13 +18,13 @@ $StartTime = $EndTime.AddDays(-$Days)
 
 if ($Local -eq "Y") {
   # Get logon, logoff, screen lock, and screen unlock events for the specified user on the local device
-  $Events = Get-WinEvent -FilterHashtable @{Logname='Security';ID=4624,4634,4800,4801;Data="$Username"; StartTime=$StartTime; EndTime=$EndTime}
+  $Events = Get-WinEvent -FilterHashtable @{Logname='Security';ID=4624,4647,4800,4801;Data="$Username"; StartTime=$StartTime; EndTime=$EndTime}
 } else {
   # Prompt the user for the name or IP of the remote device
   $RemoteDevice = Read-Host "Informe o nome ou IP do dispositivo remoto"
 
   # Get logon, logoff, screen lock, and screen unlock events for the specified user on the remote device
-  $Events = Get-WinEvent -ComputerName $RemoteDevice -FilterHashtable @{Logname='Security';ID=4624,4634,4800,4801;Data="$Username"; StartTime=$StartTime; EndTime=$EndTime}
+  $Events = Get-WinEvent -ComputerName $RemoteDevice -FilterHashtable @{Logname='Security';ID=4624,4647,4800,4801;Data="$Username"; StartTime=$StartTime; EndTime=$EndTime}
 }
 
 # Create an array to hold the report data
@@ -34,7 +34,7 @@ $Report = @()
 foreach ($Event in $Events) {
     switch ($Event.Id) {
         4624 {$eventType = "Login"}
-        4634 {$eventType = "Logoff"}
+        4647 {$eventType = "Logoff"}
         4800 {$eventType = "Bloqueio de tela"}
         4801 {$eventType = "Desbloqueio de tela"}
     }
