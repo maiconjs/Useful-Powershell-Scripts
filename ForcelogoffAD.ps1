@@ -23,7 +23,7 @@ else
     if ($timeOfDay -ge $expirationTime -and $timeOfDay -lt $($expirationTime - 15))
     {
         # Show a notification to the user
-        Write-Output "Your Windows session will expire in 15 minutes."
-        [System.Windows.Forms.MessageBox]::Show("Your Windows session will expire in 15 minutes.", "Session Expiration Warning")
+        Write-Output "Sua sessão Windows expirará em 15 minutos"
+        [System.Windows.Forms.MessageBox]::Show("Sua sessão Windows expirará em 15 minutos", "Aviso de expiração da sessão")
     }
 }
