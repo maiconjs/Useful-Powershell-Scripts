@@ -1,3 +1,7 @@
+# This script checks if a user is allowed to logon to a Windows domain at the current day and time.
+# If the user is not allowed to logon, the script will log off the user.
+# If the user's logon time is about to expire, the script will show a notification to the user.
+
 $user = "username"
 $domain = "domainname"
 
