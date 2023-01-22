@@ -1,4 +1,6 @@
-#The purpose of this script is to capture the events of logon, logoff, screen lock, and screen unlock on a local or remote device, and generate a .csv file.
+# This script prompts the user for a username, number of days to collect events for, file save location and name and if the audit is on the local device.
+# It then calculates the start and end times for the event collection and collects logon, logoff, screen lock, and screen unlock events for the specified user on the local device or remote device.
+# The script then creates an array to hold the report data, loops through each event and creates a report object, and finally exports the report to a CSV file.
 
 # Prompt the user for the username
 $Username = Read-Host "Informe o nome de usuario"
