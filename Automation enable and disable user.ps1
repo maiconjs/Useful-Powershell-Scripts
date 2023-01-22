@@ -4,6 +4,13 @@
 # It also generates a log file containing the date and time of the changes, the user who made the change,
 # and the users that were affected. The contents of the input files are cleared after the script is executed.
 # This script is useful to run in conjunction with the Windows Task Scheduler to automate the process of enabling/disabling users.
+# To insert users in the "disable.txt" and "enable.txt" files, each username should be on a new line.
+# For example, if you want to disable users "user1" and "user2", the "disable.txt" file should contain:
+# user1
+# user2
+# And if you want to enable users "user3" and "user4", the "enable.txt" file should contain:
+# user3
+# user4
 
 # Get current date and time
 $date = Get-Date -Format "dd-MM-yyyy HH:mm:ss"
