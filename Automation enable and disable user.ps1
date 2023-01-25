@@ -63,15 +63,23 @@ foreach($item in $processedDisableUsers) {
 $newDisableList = $disableList | Where-Object {$_ -notmatch ($processedDisableUsers -join "|")}
 $newEnableList = $enableList | Where-Object {$_ -notmatch ($processedEnableUsers -join "|")}
 
-# Clear the contents of the text files
-Clear-Content "C:\disable.txt"
-foreach($line in $newDisableList) {
-    Add-Content -Value $line -Path "C:\disable.txt"
+# Delete processed users from disable list
+$processedDisableUsers | ForEach-Object {
+    $line = $_
+    if($line -match $currentDate) {
+        $disableList = $disableList -replace $line,''
+    }
 }
-Clear-Content "C:\enable.txt"
-foreach($line in $newEnableList) {
-    Add-Content -Value $line -Path "C:\enable.txt"
+$disableList | Set-Content "D:\disable.txt"
+
+# Delete processed users from enable list
+$processedEnableUsers | ForEach-Object {
+    $line = $_
+    if($line -match $currentDate) {
+        $enableList = $enableList -replace $line,''
+    }
 }
+$enableList | Set-Content "D:\enable.txt"
 
 # log the cleaning of files
 Write-Output "$currentDate $currentTime : Clearing contents of C:\disable.txt and C:\enable.txt by $env:USERNAME" | Out-File -Append "C:\log.txt"
