@@ -59,10 +59,6 @@ foreach($item in $processedDisableUsers) {
     Write-Output "${currentDate} ${currentTime}: $item disabled by $env:USERNAME" | Out-File -Append "C:\log.txt"
 }
 
-# Remove the processed users from the text files
-$newDisableList = $disableList | Where-Object {$_ -notmatch ($processedDisableUsers -join "|")}
-$newEnableList = $enableList | Where-Object {$_ -notmatch ($processedEnableUsers -join "|")}
-
 # Delete processed users from disable list
 $processedDisableUsers | ForEach-Object {
     $line = $_
