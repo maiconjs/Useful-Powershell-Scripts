@@ -1,0 +1,54 @@
+# Verificar o status do Azure AD usando o comando dsregcmd /status
+$dsregcmdOutput = Invoke-Command -ScriptBlock {
+    dsregcmd /status
+}
+
+# Checar se o status do Azure AD está ok ou se há problemas
+if ($dsregcmdOutput -match "AzureAdJoined\s*:\s*YES\s*") {
+    # Apresentar "AzureAD - OK" se estiver tudo ok
+    Write-Host "AzureAD - OK"
+} else {
+    # Se houver problemas, apresentar "AzureAD Problems Detected - Trying Repair" e tentar os reparos recomendados
+    Write-Host "AzureAD Problems Detected - Trying Repair"
+    $repairOutput = Invoke-Command -ScriptBlock {
+        $output = dsregcmd /leave
+        if ($output -match "Leave is successfull") {
+            Write-Output "Left Azure AD"
+            $output = dsregcmd /join
+            if ($output -match "Join is successfull") {
+                Write-Output "Joined Azure AD"
+            } else {
+                Write-Output "Not repair, try manually"
+            }
+        } else {
+            Write-Output "Not repair, try manually"
+        }
+    }
+    if ($repairOutput -match "Azure AD") {
+        Write-Host "AzureAD - Repaired Successfully"
+    } else {
+        Write-Host "AzureAD Repair Failed - Try Manually"
+        Exit
+    }
+}
+
+# Procedimento de remoção dos registros antigos do Enrollment
+$EnrollmentsPath = "HKLM:\SOFTWARE\Microsoft\Enrollments\"
+$Enrollments = Get-ChildItem -Path $EnrollmentsPath
+foreach ($Enrollment in $Enrollments) {
+    $EnrollmentObject = Get-ItemProperty Registry::$Enrollment
+    if ($EnrollmentObject."DiscoveryServiceFullURL" -eq "https://enrollment.manage.microsoft.com/enrollmentserver/discovery.svc") {
+        $EnrollmentPath = $EnrollmentsPath + $EnrollmentObject."PSChildName"
+        Remove-Item -Path $EnrollmentPath -Recurse 
+    }
+}
+
+# Forçar o ingresso no Intune manualmente
+try {
+    Invoke-RestMethod -Uri 'https://download.sysinternals.com/files/PSTools.zip' -OutFile $env:TEMP\PSTools.zip
+    Expand-Archive -Path $env:TEMP\PSTools.zip -DestinationPath $env:TEMP\PSTools -Force
+    Start-Process -FilePath $env:TEMP\PSTools\psexec.exe -ArgumentList "-i -s -accepteula cmd /c `"deviceenroller.exe /c /AutoEnrollMDM`"" -Wait -NoNewWindow -PassThru -Verbose
+    Write-Host "Ingresso realizado com sucesso no Intune."
+} catch {
+    Write-Host "Falha ao ingressar no Intune. Tentar novamente manualmente."
+}
